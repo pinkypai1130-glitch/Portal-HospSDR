@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal Cautivo · Hospital Sótero del Río (Laboratorio)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EAF1F1;
+    --bg-2: #DCE9E8;
+    --surface: #FFFFFF;
+    --ink: #10262A;
+    --muted: #52706C;
+    --primary: #0B6E64;
+    --primary-dark: #084F48;
+    --accent: #2F6FED;
+    --success: #1E9D6B;
+    --success-bg: #E7F6EF;
+    --warn: #C8543F;
+    --line: #D3E2E0;
+    --radius: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, var(--bg-2), transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #D7EAE6, transparent 55%),
+      var(--bg);
+    min-height:100%;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .lienzo{
+    width:100%;
+    max-width: 440px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  /* ---------- Cabecera de red ---------- */
+  .barra-red{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .punto-senal{
+    display:flex;
+    align-items:flex-end;
+    gap:2px;
+    height:12px;
+  }
+  .punto-senal i{
+    display:block;
+    width:3px;
+    background: var(--primary);
+    border-radius: 1px;
+    animation: pulso 1.6s ease-in-out infinite;
+  }
+  .punto-senal i:nth-child(1){ height:4px; animation-delay:0s; }
+  .punto-senal i:nth-child(2){ height:7px; animation-delay:.15s; }
+  .punto-senal i:nth-child(3){ height:10px; animation-delay:.3s; }
+  .punto-senal i:nth-child(4){ height:12px; animation-delay:.45s; }
+  @keyframes pulso{
+    0%,100%{ opacity:.35; }
+    50%{ opacity:1; }
+  }
+  .barra-red b{ color: var(--ink); font-weight:600; }
+  .barra-red select{
+    margin-left:auto;
+    border:none;
+    background:transparent;
+    color: var(--primary-dark);
+    font-family: inherit;
+    font-size:12.5px;
+    font-weight:600;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+
+  /* ---------- Tarjeta principal ---------- */
+  .tarjeta{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 40px -22px rgba(11,110,100,0.35);
+    overflow:hidden;
+  }
+
+  .encabezado{
+    padding: 28px 26px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .cruz{
+    width:38px; height:38px;
+    border-radius:10px;
+    background: linear-gradient(155deg, var(--primary), var(--primary-dark));
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:14px;
+  }
+  .cruz svg{ width:20px; height:20px; }
+  .encabezado h1{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size: 24px;
+    line-height:1.25;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .encabezado p{
+    margin:0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height:1.5;
+  }
+
+  .cuerpo{ padding: 22px 26px 26px; }
+
+  /* ---------- Pasos ---------- */
+  .paso{ display:none; }
+  .paso.activo{ display:block; animation: aparecer .35s ease; }
+  @keyframes aparecer{ from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform:none; } }
+
+  .aviso-terminos{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .aviso-terminos input{ margin-top:2px; accent-color: var(--primary); }
+  .aviso-terminos a{ color: var(--primary-dark); font-weight:600; text-decoration:none; }
+
+  .btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .2s ease;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+  .btn-google{
+    background:#fff;
+    border-color: var(--line);
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .btn-google:hover:not(:disabled){ box-shadow: 0 4px 14px -8px rgba(0,0,0,0.35); }
+
+  .btn-email{
+    background: var(--primary);
+    color:#fff;
+    margin-bottom: 14px;
+  }
+  .btn-email:hover:not(:disabled){ background: var(--primary-dark); }
+
+  .separador{
+    display:flex; align-items:center; gap:10px;
+    color: var(--muted); font-size:12px;
+    margin: 4px 0 14px;
+  }
+  .separador::before, .separador::after{
+    content:''; flex:1; height:1px; background: var(--line);
+  }
+
+  label.campo{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color: var(--ink);
+    margin-bottom:6px;
+  }
+  input[type=email], input[type=text]{
+    width:100%;
+    padding: 12px 14px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size: 14.5px;
+    background: var(--bg);
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  input[type=email]:focus, input[type=text]:focus{
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    background:#fff;
+  }
+
+  .codigo-grupo{
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .codigo-grupo input{
+    width: 100%;
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 18px;
+    padding: 12px 0;
+    margin-bottom:0;
+    letter-spacing: 4px;
+  }
+
+  .volver{
+    background:none; border:none; color: var(--muted);
+    font-size:13px; cursor:pointer; padding:6px 0;
+    display:flex; align-items:center; gap:6px;
+  }
+  .volver:hover{ color: var(--ink); }
+
+  /* ---------- Selector de cuenta Google simulado ---------- */
+  .capa-oscura{
+    position:fixed; inset:0;
+    background: rgba(16,38,42,0.55);
+    display:flex; align-items:center; justify-content:center;
+    padding: 20px;
+    z-index: 50;
+    opacity:0; pointer-events:none;
+    transition: opacity .2s ease;
+  }
+  .capa-oscura.visible{ opacity:1; pointer-events:auto; }
+  .modal-cuentas{
+    background:#fff;
+    width:100%; max-width: 360px;
+    border-radius: 16px;
+    padding: 24px 22px;
+    transform: translateY(10px);
+    transition: transform .2s ease;
+  }
+  .capa-oscura.visible .modal-cuentas{ transform:none; }
+  .modal-cuentas h3{
+    font-size:16px; margin: 8px 0 2px; font-weight:600;
+  }
+  .modal-cuentas p{ font-size:13px; color:var(--muted); margin:0 0 18px; }
+  .cuenta{
+    display:flex; align-items:center; gap:12px;
+    padding: 11px 10px;
+    border-radius: 10px;
+    cursor:pointer;
+    border: 1px solid transparent;
+  }
+  .cuenta:hover{ background: var(--bg); border-color: var(--line); }
+  .avatar{
+    width:36px; height:36px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:600; font-size:14px;
+    flex-shrink:0;
+  }
+  .cuenta small{ display:block; color:var(--muted); font-size:12px; }
+  .cuenta strong{ font-size:13.5px; }
+  .cerrar-modal{
+    width:100%; text-align:center; background:none; border:none;
+    color: var(--accent); font-weight:600; font-size:13.5px;
+    margin-top: 12px; padding:8px; cursor:pointer;
+  }
+
+  /* ---------- Estado de conexión (cargando) ---------- */
+  .estado-conexion{ text-align:center; padding: 8px 0 4px; }
+  .anillo{
+    width:56px; height:56px; margin: 4px auto 18px;
+    border-radius:50%;
+    border: 3px solid var(--line);
+    border-top-color: var(--primary);
+    animation: girar 0.9s linear infinite;
+  }
+  @keyframes girar{ to{ transform: rotate(360deg); } }
+  .estado-conexion h2{
+    font-family:'Newsreader', serif;
+    font-size:19px; font-weight:600; margin:0 0 4px;
+  }
+  .estado-conexion p{ color:var(--muted); font-size:13.5px; margin:0; }
+
+  /* ---------- Éxito ---------- */
+  .exito{ text-align:center; }
+  .marca-exito{
+    width:56px; height:56px; margin: 4px auto 16px;
+    border-radius:50%;
+    background: var(--success-bg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .exito h2{
+    font-family:'Newsreader', serif;
+    font-weight:600; font-size:21px; margin:0 0 6px;
+  }
+  .exito > p{ color:var(--muted); font-size:14px; margin:0 0 20px; }
+
+  .tabla-sesion{
+    text-align:left;
+    background: var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding: 14px 16px;
+    font-size:13px;
+    margin-bottom:18px;
+  }
+  .tabla-sesion div{
+    display:flex; justify-content:space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .tabla-sesion div:last-child{ border-bottom:none; }
+  .tabla-sesion span:first-child{ color:var(--muted); }
+  .tabla-sesion span:last-child{ font-family:'IBM Plex Mono', monospace; font-weight:500; }
+
+  /* ---------- Consola técnica (elemento distintivo) ---------- */
+  .consola{
+    margin-top: 4px;
+    background: #0C1F22;
+    border-radius: 12px;
+    overflow:hidden;
+    border: 1px solid #143034;
+  }
+  .consola-cabecera{
+    display:flex; align-items:center; gap:8px;
+    padding: 10px 14px;
+    background: #0A1B1E;
+    border-bottom: 1px solid #143034;
+  }
+  .consola-cabecera .puntos{ display:flex; gap:5px; }
+  .consola-cabecera .puntos span{
+    width:8px; height:8px; border-radius:50%; background:#294B4F;
+  }
+  .consola-cabecera small{
+    color:#7FA9A4; font-size:11.5px; font-family:'IBM Plex Mono', monospace;
+    margin-left:4px;
+  }
+  .consola-cuerpo{
+    height: 150px;
+    overflow-y: auto;
+    padding: 12px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #9FD8CE;
+  }
+  .consola-cuerpo .linea{ display:flex; gap:8px; opacity:0; animation: entrar-linea .3s forwards; }
+  @keyframes entrar-linea{ to{ opacity:1; } }
+  .consola-cuerpo .marca-tiempo{ color:#4E7E79; flex-shrink:0; }
+  .consola-cuerpo .ok{ color:#7FE0B4; }
+  .consola-cuerpo .info{ color:#8FC5F5; }
+  .consola-cuerpo .warn{ color:#F0B45C; }
+
+  .pie-lab{
+    text-align:center;
+    font-size:11.5px;
+    color: var(--muted);
+    padding: 4px 10px;
+  }
+  .pie-lab b{ color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lienzo">
+
+  <div class="barra-red">
+    <div class="punto-senal"><i></i><i></i><i></i><i></i></div>
+    <span>Conectado a <b id="ssid-actual">HOSP-PACIENTES</b></span>
+    <select id="selector-piso" aria-label="Piso / AP simulado">
+      <option value="1">AP Piso 1</option>
+      <option value="2">AP Piso 2</option>
+      <option value="3" selected>AP Piso 3</option>
+    </select>
+  </div>
+
+  <div class="tarjeta">
+    <div class="encabezado">
+      <div class="cruz">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3v18M3 12h18" stroke="white" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Red Wi-Fi para pacientes y visitantes</h1>
+      <p>Hospital Sótero del Río — para continuar navegando, verifica tu identidad. El acceso se otorga por sesión de 60 minutos.</p>
+    </div>
+
+    <div class="cuerpo">
+
+      <!-- PASO 1: elección de método -->
+      <div class="paso activo" data-paso="1">
+        <div class="aviso-terminos">
+          <input type="checkbox" id="chk-terminos">
+          <label for="chk-terminos">Acepto la <a href="#" onclick="return false;">política de uso de la red institucional</a> y confirmo que soy paciente, acompañante o visitante autorizado.</label>
+        </div>
+
+        <button class="btn btn-google" id="btn-google">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.92c1.7-1.57 2.68-3.88 2.68-6.64z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.27c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.34C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.7c-.18-.54-.28-1.11-.28-1.7s.1-1.16.28-1.7V4.96H.96A8.996 8.996 0 000 9c0 1.45.35 2.83.96 4.04l3.01-2.34z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+          Continuar con Google
+        </button>
+
+        <div class="separador">o con tu correo</div>
+
+        <button class="btn btn-email" id="btn-mostrar-email">
+          Continuar con correo electrónico
+        </button>
+      </div>
+
+      <!-- PASO 2: ingreso de correo -->
+      <div class="paso" data-paso="2">
+        <button class="volver" data-volver="1">‹ Volver</button>
+        <label class="campo" for="campo-email">Correo electrónico</label>
+        <input type="email" id="campo-email" placeholder="nombre@correo.cl" autocomplete="email">
+        <button class="btn btn-email" id="btn-enviar-codigo">Enviar código de verificación</button>
+      </div>
+
+      <!-- PASO 3: código OTP -->
+      <div class="paso" data-paso="3">
+        <button class="volver" data-volver="2">‹ Volver</button>
+        <label class="campo">Código de verificación</label>
+        <p style="font-size:13px;color:var(--muted);margin:-8px 0 14px;">
+          Enviamos un código simulado de 6 dígitos a <b id="correo-mostrado" style="color:var(--ink)"></b>. Para este laboratorio, ingresa cualquier combinación de 6 dígitos.
+        </p>
+        <div class="codigo-grupo">
+          <input type="text" id="campo-otp" maxlength="6" inputmode="numeric" placeholder="000000">
+        </div>
+        <button class="btn btn-email" id="btn-validar-otp">Verificar e ingresar</button>
+      </div>
+
+      <!-- PASO 4: cargando -->
+      <div class="paso" data-paso="4">
+        <div class="estado-conexion">
+          <div class="anillo"></div>
+          <h2 id="titulo-carga">Autenticando con el servidor RADIUS…</h2>
+          <p id="subtitulo-carga">No cierres esta ventana</p>
+        </div>
+      </div>
+
+      <!-- PASO 5: éxito -->
+      <div class="paso" data-paso="5">
+        <div class="exito">
+          <div class="marca-exito">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#1E9D6B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2>Acceso concedido</h2>
+          <p>Ya puedes navegar. La sesión se cerrará automáticamente al vencer el tiempo asignado.</p>
+
+          <div class="tabla-sesion">
+            <div><span>Identidad</span><span id="dato-identidad">—</span></div>
+            <div><span>Método</span><span id="dato-metodo">—</span></div>
+            <div><span>VLAN asignada</span><span>40 (Invitados)</span></div>
+            <div><span>IP asignada</span><span id="dato-ip">—</span></div>
+            <div><span>AP / Piso</span><span id="dato-ap">—</span></div>
+            <div><span>Duración sesión</span><span>60 min</span></div>
+          </div>
+
+          <button class="btn btn-email" id="btn-reiniciar" style="background:var(--ink)">Simular nueva sesión</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="consola">
+    <div class="consola-cabecera">
+      <div class="puntos"><span></span><span></span><span></span></div>
+      <small>traza-wlc.log — simulación de laboratorio</small>
+    </div>
+    <div class="consola-cuerpo" id="consola-cuerpo"></div>
+  </div>
+
+  <p class="pie-lab"><b>Laboratorio de simulación.</b> No se envían datos a ningún servidor real; el login de Google es una recreación visual de la UX y no ejecuta OAuth real.</p>
+
+</div>
+
+<!-- Modal simulación selector de cuenta Google -->
+<div class="capa-oscura" id="capa-google">
+  <div class="modal-cuentas">
+    <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.92c1.7-1.57 2.68-3.88 2.68-6.64z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.27c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.34C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.7c-.18-.54-.28-1.11-.28-1.7s.1-1.16.28-1.7V4.96H.96A8.996 8.996 0 000 9c0 1.45.35 2.83.96 4.04l3.01-2.34z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+    <h3>Elige una cuenta</h3>
+    <p>para continuar hacia <b>portal.soterodelrio.cl</b> (simulado)</p>
+
+    <div class="cuenta" data-nombre="Javiera Contreras" data-correo="javiera.contreras@gmail.com" data-color="#2F6FED">
+      <div class="avatar" style="background:#2F6FED">JC</div>
+      <div><strong>Javiera Contreras</strong><small>javiera.contreras@gmail.com</small></div>
+    </div>
+    <div class="cuenta" data-nombre="Manuel Soto" data-correo="manuel.soto.p@gmail.com" data-color="#C8543F">
+      <div class="avatar" style="background:#C8543F">MS</div>
+      <div><strong>Manuel Soto</strong><small>manuel.soto.p@gmail.com</small></div>
+    </div>
+    <div class="cuenta" data-nombre="Otra cuenta" data-correo="usar otra cuenta" data-color="#52706C">
+      <div class="avatar" style="background:#52706C">＋</div>
+      <div><strong>Usar otra cuenta</strong><small>&nbsp;</small></div>
+    </div>
+
+    <button class="cerrar-modal" id="btn-cerrar-modal">Cancelar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Estado en memoria (sin localStorage) ----------
+  const estado = {
+    metodo: null,        // 'google' | 'correo'
+    identidad: null,
+    piso: '3'
+  };
+
+  const pisos = {
+    '1': { ssid: 'HOSP-ADMISION',        vlanTexto: 'VLAN 10 → puente a VLAN 40 invitados', ip: '10.40.12.' },
+    '2': { ssid: 'HOSP-URG-ADULTO',      vlanTexto: 'VLAN 20 → puente a VLAN 40 invitados', ip: '10.40.24.' },
+    '3': { ssid: 'HOSP-URG-INFANTIL',    vlanTexto: 'VLAN 30 → puente a VLAN 40 invitados', ip: '10.40.36.' }
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const pasos = document.querySelectorAll('.paso');
+  const consolaCuerpo = $('#consola-cuerpo');
+  const selectorPiso = $('#selector-piso');
+  const ssidActual = $('#ssid-actual');
+
+  function irAPaso(n){
+    pasos.forEach(p => p.classList.toggle('activo', p.dataset.paso === String(n)));
+  }
+
+  function ipAleatoria(prefijo){
+    return prefijo + (Math.floor(Math.random()*200)+10);
+  }
+
+  function log(mensaje, tipo){
+    tipo = tipo || 'info';
+    const ahora = new Date();
+    const marca = ahora.toLocaleTimeString('es-CL', {hour12:false});
+    const linea = document.createElement('div');
+    linea.className = 'linea';
+    linea.innerHTML = `<span class="marca-tiempo">${marca}</span><span class="${tipo}">${mensaje}</span>`;
+    consolaCuerpo.appendChild(linea);
+    consolaCuerpo.scrollTop = consolaCuerpo.scrollHeight;
+  }
+
+  function actualizarSSID(){
+    ssidActual.textContent = pisos[selectorPiso.value].ssid;
+  }
+  selectorPiso.addEventListener('change', actualizarSSID);
+  actualizarSSID();
+
+  log('WLC: cliente asociado por Open Authentication a ' + pisos[selectorPiso.value].ssid, 'info');
+  log('WLC: redirect-ACL aplicada, esperando tráfico HTTP…', 'info');
+  log('WLC: interceptando solicitud → redirección 302 a portal cautivo', 'warn');
+  log('TLS: handshake válido, certificado OV emitido por CA pública', 'ok');
+
+  function requiereTerminos(){
+    if(!$('#chk-terminos').checked){
+      $('.aviso-terminos').style.borderColor = 'var(--warn)';
+      $('.aviso-terminos').style.boxShadow = '0 0 0 2px rgba(200,84,63,0.15)';
+      log('Portal: intento de acceso sin aceptar política de uso — bloqueado', 'warn');
+      return true;
+    }
+    return false;
+  }
+
+  // ---------- Flujo Google (simulado) ----------
+  $('#btn-google').addEventListener('click', () => {
+    if(requiereTerminos()) return;
+    log('Portal: usuario seleccionó método "Continuar con Google"', 'info');
+    $('#capa-google').classList.add('visible');
+  });
+
+  $('#btn-cerrar-modal').addEventListener('click', () => {
+    $('#capa-google').classList.remove('visible');
+  });
+  $('#capa-google').addEventListener('click', (e) => {
+    if(e.target.id === 'capa-google') $('#capa-google').classList.remove('visible');
+  });
+
+  document.querySelectorAll('.cuenta').forEach(el => {
+    el.addEventListener('click', () => {
+      const nombre = el.dataset.nombre;
+      const correo = el.dataset.correo;
+      $('#capa-google').classList.remove('visible');
+      estado.metodo = 'Google (simulado)';
+      estado.identidad = correo === 'usar otra cuenta' ? 'cuenta-manual@gmail.com' : correo;
+      log('Google (sim): cuenta seleccionada — ' + estado.identidad, 'ok');
+      iniciarValidacion();
+    });
+  });
+
+  // ---------- Flujo correo + OTP ----------
+  $('#btn-mostrar-email').addEventListener('click', () => {
+    if(requiereTerminos()) return;
+    log('Portal: usuario seleccionó método "Correo electrónico"', 'info');
+    irAPaso(2);
+  });
+
+  $('#btn-enviar-codigo').addEventListener('click', () => {
+    const email = $('#campo-email').value.trim();
+    const valido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if(!valido){
+      $('#campo-email').style.outline = '2px solid var(--warn)';
+      log('Portal: formato de correo inválido, solicitud rechazada', 'warn');
+      return;
+    }
+    $('#campo-email').style.outline = '';
+    estado.identidad = email;
+    $('#correo-mostrado').textContent = email;
+    log('SMTP (sim): código OTP generado y enviado a ' + email, 'ok');
+    irAPaso(3);
+  });
+
+  $('#btn-validar-otp').addEventListener('click', () => {
+    const otp = $('#campo-otp').value.trim();
+    if(!/^\d{6}$/.test(otp)){
+      $('#campo-otp').style.outline = '2px solid var(--warn)';
+      log('Portal: código OTP inválido', 'warn');
+      return;
+    }
+    $('#campo-otp').style.outline = '';
+    estado.metodo = 'Correo + OTP';
+    log('Portal: código verificado correctamente', 'ok');
+    iniciarValidacion();
+  });
+
+  // ---------- Botón volver ----------
+  document.querySelectorAll('[data-volver]').forEach(btn => {
+    btn.addEventListener('click', () => irAPaso(btn.dataset.volver));
+  });
+
+  // ---------- Validación contra "RADIUS" simulado ----------
+  function iniciarValidacion(){
+    irAPaso(4);
+    $('#titulo-carga').textContent = 'Autenticando con el servidor RADIUS…';
+    $('#subtitulo-carga').textContent = 'Enviando Access-Request (WLC → RADIUS)';
+    log('RADIUS (sim): Access-Request enviado, secreto compartido validado', 'info');
+
+    setTimeout(() => {
+      $('#titulo-carga').textContent = 'Aplicando política de autorización…';
+      $('#subtitulo-carga').textContent = 'Access-Accept + CoA hacia el WLC';
+      log('RADIUS (sim): Access-Accept recibido, atributos de sesión aplicados', 'ok');
+    }, 1100);
+
+    setTimeout(() => {
+      $('#titulo-carga').textContent = 'Habilitando salida a Internet…';
+      $('#subtitulo-carga').textContent = 'Asignando IP en VLAN 40';
+      log('DHCP (sim): IP asignada en pool de VLAN 40 (invitados)', 'info');
+    }, 2000);
+
+    setTimeout(() => {
+      const datosPiso = pisos[selectorPiso.value];
+      const ip = ipAleatoria(datosPiso.ip);
+
+      $('#dato-identidad').textContent = estado.identidad;
+      $('#dato-metodo').textContent = estado.metodo;
+      $('#dato-ip').textContent = ip;
+      $('#dato-ap').textContent = 'AP Piso ' + selectorPiso.value + ' · ' + datosPiso.ssid;
+
+      log('WLC: sesión de invitado activa — ' + ip + ' — expira en 60 min', 'ok');
+      irAPaso(5);
+    }, 2900);
+  }
+
+  // ---------- Reinicio del laboratorio ----------
+  $('#btn-reiniciar').addEventListener('click', () => {
+    estado.metodo = null;
+    estado.identidad = null;
+    $('#campo-email').value = '';
+    $('#campo-otp').value = '';
+    $('#chk-terminos').checked = false;
+    log('— nueva sesión de laboratorio iniciada —', 'warn');
+    irAPaso(1);
+  });
+
+})();
+</script>
+
+</body>
+</html>
